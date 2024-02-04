@@ -1,0 +1,12 @@
+{
+  "1": {
+    "id": 1,
+    "title": "Hello, World!",
+    "content": "Hello all worlds! Some text."
+  },
+  "2": {
+    "id": 2,
+    "title": "Other article!",
+    "content": "Some text about other."
+  }
+}
