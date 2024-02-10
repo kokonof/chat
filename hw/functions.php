@@ -1,43 +1,123 @@
 <?php
 
-	// your functions may be here
+function connectToDatabase() {
+    $servername = "localhost";
+    $username = "root";
+    $password = "";
+    $dbname = "test_db";
 
-	/* start --- black box */
-	function getArticles() : array{
-		return json_decode(file_get_contents('db/articles.json'), true);
-	}
+    try {
+        // Створення з'єднання з використанням PDO
+        $dsn = "mysql:host=$servername;dbname=$dbname";
+        $conn = new PDO($dsn, $username, $password);
 
-	function addArticle(string $title1, string $content2, $author = 'User') : bool{
-		$articles = getArticles();
+        // Встановлення режиму помилок PDO на викид винятків
+        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-		$lastId = end($articles)['id'];
-		$id = $lastId + 1;
+        return $conn;
+    } catch(PDOException $e) {
+        // Обробка помилок під час з'єднання
+        die("Помилка з'єднання: " . $e->getMessage());
+    }
+}
 
-		$articles[$id] = [
-			'id' => $id,
-			'title' => $title1,
-			'content' => $content2,
-            'author' => $author
-		];
+function getArticles() : array {
+    // Підключення до бази даних
+    $conn = connectToDatabase();
 
-		saveArticles($articles);
-		return true;
-	}
+    // SQL-запит для вибірки всіх записів
+    $sql = "SELECT * FROM articles";
 
-	function removeArticle(int $id) : bool{
-		$articles = getArticles();
+    try {
+        // Підготовка та виконання запиту з використанням PDO
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
 
-		if(isset($articles[$id])){
-			unset($articles[$id]);
-			saveArticles($articles);
-			return true;
-		}
-		
-		return false;
-	}
+        // Отримання результатів запиту
+        $articlesArray = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-	function saveArticles(array $articles) : bool{
-		file_put_contents('db/articles.json', json_encode($articles));
-		return true;
-	}
-	/* end --- black box */
+        // Закриваємо з'єднання
+        $conn = null;
+
+        return $articlesArray;
+    } catch(PDOException $e) {
+        // Обробка помилок під час виконання запиту
+        die("Помилка запиту: " . $e->getMessage());
+    }
+}
+
+
+function addArticle(string $title, string $content, $author = 'User') : bool {
+    // Підключення до бази даних
+    $conn = connectToDatabase();
+
+    // SQL-запит для вставки нового запису
+    $sql = "INSERT INTO articles (title, content) VALUES (:title, :content)";
+
+    try {
+        // Підготовка та виконання запиту з використанням PDO
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':title', $title);
+        $stmt->bindParam(':content', $content);
+        $result = $stmt->execute();
+
+        // Закриваємо з'єднання
+        $conn = null;
+
+        return $result;
+    } catch(PDOException $e) {
+        // Обробка помилок під час виконання запиту
+        die("Помилка запиту: " . $e->getMessage());
+    }
+}
+
+
+
+function removeArticle(int $id) : bool {
+    // Підключення до бази даних
+    $conn = connectToDatabase();
+
+    // SQL-запит для видалення запису за ідентифікатором
+    $sql = "DELETE FROM articles WHERE id = :id";
+
+    try {
+        // Підготовка та виконання запиту з використанням PDO
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $result = $stmt->execute();
+
+        // Закриваємо з'єднання
+        $conn = null;
+
+        return $result;
+    } catch(PDOException $e) {
+        // Обробка помилок під час виконання запиту
+        die("Помилка запиту: " . $e->getMessage());
+    }
+}
+
+function getArticleById(int $id) {
+    // Підключення до бази даних
+    $conn = connectToDatabase();
+
+    // SQL-запит для вибірки одного запису за ідентифікатором
+    $sql = "SELECT * FROM articles WHERE id = :id";
+
+    try {
+        // Підготовка та виконання запиту з використанням PDO
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+
+        // Отримання результату запиту
+        $article = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        // Закриваємо з'єднання
+        $conn = null;
+
+        return $article;
+    } catch(PDOException $e) {
+        // Обробка помилок під час виконання запиту
+        die("Помилка запиту: " . $e->getMessage());
+    }
+}

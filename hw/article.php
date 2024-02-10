@@ -1,20 +1,21 @@
 <?php
 
-	include_once('functions.php');		
-	$articles = getArticles();
+	include_once('functions.php');
+$id = (int)($_GET['id'] ?? '');
+	$article = getArticleById($id);
 
-	$id = (int)($_GET['id'] ?? '');
-	$post = $articles[$id] ?? null;
-	$hasPost = ($post !== null);
+
+//	$post = $articles[$id] ?? null;
+	$hasPost = ($article !== null);
 
 ?>
 <div class="content">
 	<? if($hasPost): ?>
 		<div class="article">
-			<h1><?=$post['title']?></h1>
-			<div><?=$post['content']?></div>
+			<h1><?=$article['title']?></h1>
+			<div><?=$article['content']?></div>
 			<hr>
-			<a href="delete.php?id=<?=$id?>">Remove</a>
+			<a href="delete.php?id=<?=$article['id']?>">Remove</a>
 		</div>
 	<? else: ?>
 		<div class="e404">
