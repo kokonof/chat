@@ -2,13 +2,12 @@
 require_once ('functions.php');
 require_once ('error.php');
 
-$id = ($_GET['id'] ?? '');
-if ($id) {
+if ($id = ($_GET['id'] ?? '')) {
     $removeMessages = removeMessages($id);
     header("Location: index.php");
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if (!empty($_POST)) {
     $username = $_POST['username'] ?? '';
     $userMessages = $_POST['message'] ?? '';
     $header = $_POST['header'] ?? '';
@@ -22,6 +21,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 $messages = getMessages();
+
+echo hash('sha256', $_SESSION['email']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -47,6 +48,7 @@ $messages = getMessages();
 </head>
 <body>
 
+
 <!-- Хедер з посиланнями на головну і чат -->
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container">
@@ -63,7 +65,7 @@ $messages = getMessages();
             <form method="post">
                 <div class="mb-3">
                     <label for="username" class="form-label">Your Name</label>
-                    <input type="text" class="form-control" id="username" name="username">
+                    <input type="text" class="form-control" id="username" name="username" value="<?= !empty($_SESSION['email']) ? $_SESSION['email']: ''?>">
                 </div>
                 <div class="mb-3">
                     <label for="message" class="form-label">header</label>
