@@ -3,6 +3,7 @@
 	include_once('functions.php');
 	$articles = getArticles();
 
+    var_dump($_SESSION['email']);
 ?>
 <a href="add.php">Add article</a>
 <hr>
