@@ -1,8 +1,9 @@
 
 <?php
 require_once 'functions.php';
+require_once 'database.php';
 // Перевірка, чи дані були відправлені методом POST
-if (!empty($_POST)) {
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST['username'];
     $email = $_POST['email'];
     $password = $_POST['password'];
@@ -27,17 +28,26 @@ if (!empty($_POST)) {
     }
 
 
+    $conn = connectToDatabase();
 
-    // стукнути в базу і реєструвати юзера
-    // і в сесію треба класти токен по якому ти потім будеш робити запити
-//    $_SESSION['email'] = $email;
-//    header("Location: index.php");
+    $sql = "INSERT INTO users (username, email, password) VALUES (:username, :email, :password)";
+    $stmt = $conn->prepare($sql);
 
-} elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    echo "Помилка: дані не були передані.";
+    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+    $stmt->bindParam(':username', $username);
+    $stmt->bindParam(':email', $email);
+    $stmt->bindParam(':password', $hashed_password);
+
+    if ($stmt->execute()) {
+        echo "Вітаємо, $username! Ваша реєстрація успішно завершена.";
+    } else {
+        echo "Помилка при реєстрації: " . $stmt->errorInfo()[2];
+    }
+
+    $conn = null;
 }
-
 ?>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
