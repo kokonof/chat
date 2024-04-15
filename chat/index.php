@@ -1,7 +1,7 @@
 <?php
 require_once ('functions.php');
 require_once ('error.php');
-
+//require_once('index.php');
 if ($id = ($_GET['id'] ?? '')) {
     $removeMessages = removeMessages($id);
     header("Location: index.php");
@@ -103,7 +103,7 @@ $messages = getMessages();
         </div>
         <div class="col-md-8">
             <!-- Список повідомлень -->
-            <? foreach($messages as $message): ?>
+            <?php foreach($messages as $message): ?>
                 <div class="message">
                     <img src="https://via.placeholder.com/30" alt="User Avatar">
                     <div>
@@ -115,7 +115,7 @@ $messages = getMessages();
 
                 </div>
 
-            <? endforeach; ?>
+            <?php endforeach; ?>
 
             </div>
             <!-- Додавання інших повідомлень сюди -->
