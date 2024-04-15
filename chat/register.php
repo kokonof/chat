@@ -31,7 +31,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $conn = connectToDatabase();
 
     $sql = "INSERT INTO users (username, email, password) VALUES (:username, :email, :password)";
-    $stmt = $conn->prepare($sql);
+    $stmt = $conn->prepare($sql);// Код для вставки нового користувача в базу даних
+    if ($stmt->execute()) {
+        echo "Вітаємо, $username! Ваша реєстрація успішно завершена.";
+
+        // Додати перенаправлення користувача на залогінену сторінку
+        header("Location: logged_in_page.php");
+        exit; // Важливо додати exit після header, щоб переконатися, що код далі не виконується
+    } else {
+        echo "Помилка при реєстрації: " . $stmt->errorInfo()[2];
+    }
+
 
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
     $stmt->bindParam(':username', $username);
@@ -56,7 +66,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <body>
     <h2>Форма реєстрації</h2>
-    <form action="register.php" method="post">
+    <form action="index.php" method="post">
         <label for="username">Ім'я користувача:</label>
         <input type="text" id="username" name="username" ><br><br>
 
