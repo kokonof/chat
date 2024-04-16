@@ -38,7 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['email']) && isset($_PO
     if ($user && password_verify($password, $user['password'])) {
         // Успішний вхід - зберігаємо дані в сесію та перенаправляємо на головну сторінку
         $_SESSION['email'] = $email;
-        header("Location: index.php");
+        header("Location: chat.php");
         exit;
     } else {
         echo "Email або пароль невірні.";
