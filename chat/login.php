@@ -68,6 +68,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['email']) && isset($_PO
     <input type="submit" value="Увійти">
 </form>
 <p>Не маєте акаунту? <a href="register.php">Зареєструйтесь</a></p>
-<p><a href="delete_account.php">Видалити свій профіль</a></p> <!-- Додане посилання -->
+<!--<p><a href="delete_account.php">Видалити свій профіль</a></p> Додане посилання
 </body>
 </html>

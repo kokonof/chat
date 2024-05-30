@@ -1,63 +1,60 @@
-
 <?php
 require_once 'functions.php';
 require_once 'database.php';
-// Перевірка, чи дані були відправлені методом POST
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST['username'];
     $email = $_POST['email'];
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
 
-    // Перевірка довжини імені
+    // Перевірка довжини імені та паролю
     if (!checkStringLength($username, 3, 15)) {
-        echo "імя повине містити від 3 до 15 символів." . "<br>";
-//        exit; // Припиняємо виконання скрипту
+        echo "Ім'я повинно містити від 3 до 15 символів." . "<br>";
+        exit;
     }
-    if (!checkStringLength($password, 6, 20)) {
-        echo "Пароль повинен містити від 6 до 20 символів." . "<br>";
-//        exit; // Припиняємо виконання скрипту
+    if (!checkStringLength($password, 6, 20) || !checkStringLength($confirm_password, 6, 20)) {
+        echo "Пароль та його підтвердження повинні містити від 6 до 20 символів." . "<br>";
+        exit;
     }
-    if (!checkStringLength($confirm_password, 6, 20)) {
-        echo "Підтвердження Пароля повинен містити від 6 до 20 символів." . "<br>";
-//        exit; // Припиняємо виконання скрипту
-    }
+    // Перевірка правильності введеного email
     if (!validateEmail($email)) {
-        echo "Email not valid" . "<br>";
-//        exit;
+        echo "Email введено неправильно." . "<br>";
+        exit;
     }
 
+    // Перевірка, що пароль співпадає з підтвердженням пароля
+    if ($password !== $confirm_password) {
+        echo "Пароль та його підтвердження не співпадають." . "<br>";
+        exit;
+
+    }
+
+    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
     $conn = connectToDatabase();
 
     $sql = "INSERT INTO users (username, email, password) VALUES (:username, :email, :password)";
-    $stmt = $conn->prepare($sql);// Код для вставки нового користувача в базу даних
-    if ($stmt->execute()) {
-        echo "Вітаємо, $username! Ваша реєстрація успішно завершена.";
+    $stmt = $conn->prepare($sql);
 
-        // Додати перенаправлення користувача на залогінену сторінку
-        header("Location: logged_in_page.php");
-        exit; // Важливо додати exit після header, щоб переконатися, що код далі не виконується
-    } else {
-        echo "Помилка при реєстрації: " . $stmt->errorInfo()[2];
-    }
-
-
-    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+    // Прив'язка параметрів до реальних значень
     $stmt->bindParam(':username', $username);
     $stmt->bindParam(':email', $email);
     $stmt->bindParam(':password', $hashed_password);
 
     if ($stmt->execute()) {
         echo "Вітаємо, $username! Ваша реєстрація успішно завершена.";
+        header("Location: login.php");
     } else {
         echo "Помилка при реєстрації: " . $stmt->errorInfo()[2];
     }
 
-    $conn = null;
+    $conn = null; // Закриття з'єднання
+
 }
 ?>
 
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -65,21 +62,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>Реєстрація</title>
 </head>
 <body>
-    <h2>Форма реєстрації</h2>
-    <form action="index.php" method="post">
-        <label for="username">Ім'я користувача:</label>
-        <input type="text" id="username" name="username" ><br><br>
+<h2>Форма реєстрації</h2>
+<form action="register.php" method="post">
+    <label for="username">Ім'я користувача:</label>
+    <input type="text" id="username" name="username"><br><br>
 
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" ><br><br>
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email"><br><br>
 
-        <label for="password">Пароль:</label>
-        <input type="password" id="password" name="password" ><br><br>
+    <label for="password">Пароль:</label>
+    <input type="password" id="password" name="password"><br><br>
 
-        <label for="confirm_password">Підтвердження паролю:</label>
-        <input type="password" id="confirm_password" name="confirm_password" ><br><br>
+    <label for="confirm_password">Підтвердження паролю:</label>
+    <input type="password" id="confirm_password" name="confirm_password"><br><br>
 
-        <button type="submit">Зареєструватися</button>
-    </form>
+    <button type="submit">Зареєструватися</button>
+</form>
 </body>
 </html>
