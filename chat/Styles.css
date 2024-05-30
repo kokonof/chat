@@ -1,0 +1,53 @@
+body {
+    font-family: WESTERN, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+header {
+    background: #333333;
+    color: #ffffff;
+    padding: 20px 0;
+    text-align: center;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+nav ul .left-item {
+    margin-right: 100px; /* Відступає праворуч від цього елемента */
+}
+
+nav ul .nav-item {
+    margin-left: 20px; /* Відступає ліворуч від кожного елемента */
+}
+
+nav ul li a {
+    color: #ffffff;
+    text-decoration: none;
+    text-decoration-color: aquamarine;
+}
+
+.hero {
+    background: #5D9CEC;
+    color: #fff;
+    padding: 50px 20px;
+    text-align: center;
+}
+
+.content {
+    padding: 15px;
+}
+
+footer {
+    background: #ff0000;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+}
